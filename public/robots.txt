@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://mlbricks.dev/sitemap.xml
+
+# Disallow crawling of dev/staging environments
+User-agent: *
+Disallow: /api/
+Disallow: /.git/
+Disallow: /node_modules/
+Disallow: /dist/
+Disallow: /src/
+
+# Allow search engines to crawl main pages
+Allow: /
+Allow: /workspace
