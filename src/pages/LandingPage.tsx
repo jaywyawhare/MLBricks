@@ -1,207 +1,178 @@
 import { 
-  ArrowRight, 
   Code, 
   Blocks, 
   Brain, 
   BarChart3, 
   Sparkles, 
-  Play, 
   Github, 
   Star, 
-  Database, 
-  Network, 
-  Rocket, 
-  Mouse
+  Database,
+  Network
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Link } from 'react-router-dom'
 
 function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+    <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <a href="/" className="flex items-center space-x-2">
-                <img src="/favicon.svg" alt="MLBricks" className="h-8 w-8" />
-                <span className="text-xl font-bold text-slate-900 dark:text-white">MLBricks</span>
-              </a>
-            </div>
-            <div className="hidden md:flex md:items-center md:space-x-8">
-              <a href="#features" className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition">Features</a>
-              <a href="#how-it-works" className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition">How it Works</a>
-              <a href="/workspace" className="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
-                Launch App
-              </a>
-            </div>
+      <nav className="sticky top-0 z-50 border-b border-border/40 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-16 items-center justify-between">
+          <a href="/" className="flex items-center space-x-3">
+            <img src="/favicon.svg" alt="MLBricks" className="h-7 w-7" />
+            <span className="font-bold text-xl tracking-tight">MLBricks</span>
+          </a>
+          <div className="flex items-center gap-4">
+            <a 
+              href="https://github.com/jaywyawhare/MLBricks" 
+              className="inline-flex h-10 items-center justify-center rounded-full border border-border px-6 py-2 text-sm font-medium transition-all hover:bg-accent"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub
+            </a>
+            <a 
+              href="/workspace" 
+              className="inline-flex h-10 items-center justify-center rounded-full bg-primary px-6 py-2 text-sm font-medium text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:shadow-primary/25 hover:scale-105"
+            >
+              Playground
+            </a>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-20 pb-32 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 dark:text-white mb-6 animate-fade-in">
-              Build ML Pipelines with
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-secondary"> Drag & Drop</span>
-            </h1>
-            <p className="max-w-2xl mx-auto text-xl text-slate-600 dark:text-slate-300 mb-8 animate-fade-in">
-              Create, test, and deploy machine learning models without writing a single line of code. 
-              Perfect for data scientists and ML engineers.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in">
-              <a href="/workspace" className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-primary/90 transition">
-                Start Building
-              </a>
-              <a href="#how-it-works" className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 border border-slate-300 dark:border-slate-700 text-base font-medium rounded-md text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
-                Learn More
-              </a>
-            </div>
+      <section className="container relative pt-32 pb-24">
+        <div className="mx-auto max-w-[980px] text-center">
+          <div className="inline-flex items-center rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary mb-8">
+            <Sparkles className="w-4 h-4 mr-2" />
+            Open Source & Ready to Use
+          </div>
+          <h1 className="text-5xl font-bold tracking-tight text-foreground sm:text-7xl mb-6">
+            Learn ML Your Way{" "}
+            <span className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">
+              Visually
+            </span>
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-[750px] mx-auto mb-12">
+            Break down complex ML concepts into visual, interactive blocks. 
+            Build real models, experiment with data, and learn by doing.
+          </p>
+          <div className="flex justify-center gap-4 items-center">
+            <a 
+              href="/workspace" 
+              className="inline-flex h-12 items-center justify-center rounded-full bg-primary px-8 py-2 text-sm font-medium text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:shadow-primary/25 hover:scale-105"
+            >
+              Try Playground
+            </a>
+            <a 
+              href="https://github.com/jaywyawhare/MLBricks" 
+              className="inline-flex h-12 items-center justify-center rounded-full border border-border px-8 py-2 text-sm font-medium transition-all hover:bg-accent"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View on GitHub
+            </a>
           </div>
         </div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(71,85,105,0.06),transparent_70%)]"></div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-24 bg-white dark:bg-slate-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="container py-24 border-t border-border/40">
+        <div className="mx-auto max-w-[980px]">
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white mb-4">
-              Everything You Need for ML Development
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
+              Learn ML Your Way
             </h2>
-            <p className="text-lg text-slate-600 dark:text-slate-300">
-              Powerful features to streamline your machine learning workflow
+            <p className="text-muted-foreground text-lg">
+              From basic data processing to advanced neural networks
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                title: 'Drag & Drop Interface',
-                description: 'Intuitive drag-and-drop interface for building ML pipelines with pre-built components',
-                icon: '🎯'
-              },
-              {
-                title: 'Multiple ML Tasks',
-                description: 'Support for classification, regression, clustering, and neural network architectures',
-                icon: '🤖'
-              },
-              {
-                title: 'Code Generation',
-                description: 'Automatically generate clean Python code for your ML pipeline',
-                icon: '⚡️'
-              },
-              {
-                title: 'Popular Frameworks',
-                description: 'Integration with TensorFlow, Scikit-learn, XGBoost, and more',
-                icon: '📚'
-              },
-              {
-                title: 'Real-time Preview',
-                description: 'Visualize your model architecture and data flow in real-time',
-                icon: '👁️'
-              },
-              {
-                title: 'Export & Deploy',
-                description: 'Export your models and deploy them anywhere with ease',
-                icon: '🚀'
-              }
-            ].map((feature, index) => (
-              <div key={index} className="relative p-6 bg-slate-50 dark:bg-slate-800 rounded-xl hover:scale-[1.02] transition duration-300">
-                <div className="text-4xl mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-slate-600 dark:text-slate-300">
-                  {feature.description}
-                </p>
+          <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="group rounded-2xl border border-border bg-background/50 p-6 transition-all hover:shadow-xl hover:scale-105 hover:border-primary/50 backdrop-blur">
+              <div className="mb-4 rounded-full bg-primary/10 w-12 h-12 flex items-center justify-center group-hover:bg-primary/20">
+                <Brain className="w-6 h-6 text-primary" />
               </div>
-            ))}
+              <h3 className="text-xl font-semibold mb-2 group-hover:text-primary">Visual Learning</h3>
+              <p className="text-muted-foreground">
+                Learn ML concepts through interactive visual blocks
+              </p>
+            </div>
+
+            <div className="group rounded-2xl border border-border bg-background/50 p-6 transition-all hover:shadow-xl hover:scale-105 hover:border-primary/50 backdrop-blur">
+              <div className="mb-4 rounded-full bg-primary/10 w-12 h-12 flex items-center justify-center group-hover:bg-primary/20">
+                <Code className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2 group-hover:text-primary">Hands-on Practice</h3>
+              <p className="text-muted-foreground">
+                Build real ML models as you learn
+              </p>
+            </div>
+
+            <div className="group rounded-2xl border border-border bg-background/50 p-6 transition-all hover:shadow-xl hover:scale-105 hover:border-primary/50 backdrop-blur">
+              <div className="mb-4 rounded-full bg-primary/10 w-12 h-12 flex items-center justify-center group-hover:bg-primary/20">
+                <Blocks className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2 group-hover:text-primary">Step by Step</h3>
+              <p className="text-muted-foreground">
+                Progress from basics to deep learning
+              </p>
+            </div>
+
+            <div className="group rounded-2xl border border-border bg-background/50 p-6 transition-all hover:shadow-xl hover:scale-105 hover:border-primary/50 backdrop-blur">
+              <div className="mb-4 rounded-full bg-primary/10 w-12 h-12 flex items-center justify-center group-hover:bg-primary/20">
+                <BarChart3 className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2 group-hover:text-primary">Real Results</h3>
+              <p className="text-muted-foreground">
+                Visualize and understand your models
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-br from-slate-800 to-slate-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-6">
-            Ready to Transform Your ML Workflow?
-          </h2>
-          <p className="text-lg text-slate-300 mb-8 max-w-2xl mx-auto">
-            Join thousands of data scientists and ML engineers who are building better models faster with MLBricks.
-          </p>
-          <a
-            href="/workspace"
-            className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-slate-900 bg-white hover:bg-slate-100 transition"
-          >
-            Get Started for Free
-          </a>
+      {/* Block Library Preview */}
+      <section className="border-t border-border/40 bg-accent/50">
+        <div className="container py-24">
+          <div className="mx-auto max-w-[980px] text-center">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
+              ML Building Blocks
+            </h2>
+            <p className="text-muted-foreground text-lg mb-12 max-w-[600px] mx-auto">
+              From data preprocessing to deep learning, our visual blocks help you understand and implement ML concepts
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div className="p-6 rounded-2xl bg-background/50 border border-border/50 backdrop-blur hover:scale-105 transition-all">
+                <h3 className="font-semibold mb-2">Data Processing</h3>
+                <p className="text-sm text-muted-foreground">Clean and prepare your data</p>
+              </div>
+              <div className="p-6 rounded-2xl bg-background/50 border border-border/50 backdrop-blur hover:scale-105 transition-all">
+                <h3 className="font-semibold mb-2">Classification</h3>
+                <p className="text-sm text-muted-foreground">Learn supervised learning</p>
+              </div>
+              <div className="p-6 rounded-2xl bg-background/50 border border-border/50 backdrop-blur hover:scale-105 transition-all">
+                <h3 className="font-semibold mb-2">Neural Networks</h3>
+                <p className="text-sm text-muted-foreground">Build deep learning models</p>
+              </div>
+              <div className="p-6 rounded-2xl bg-background/50 border border-border/50 backdrop-blur hover:scale-105 transition-all">
+                <h3 className="font-semibold mb-2">Evaluation</h3>
+                <p className="text-sm text-muted-foreground">Measure model performance</p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-12 bg-slate-900 text-slate-400">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-sm font-semibold text-white tracking-wider uppercase mb-4">Product</h3>
-              <ul className="space-y-4">
-                <li>
-                  <a href="#features" className="hover:text-white transition">Features</a>
-                </li>
-                <li>
-                  <a href="#how-it-works" className="hover:text-white transition">How it Works</a>
-                </li>
-                <li>
-                  <a href="#pricing" className="hover:text-white transition">Pricing</a>
-                </li>
-              </ul>
+      <footer className="border-t border-border/40 bg-accent/50">
+        <div className="container py-6">
+          <div className="flex justify-between items-center">
+            <p className="text-sm text-muted-foreground">
+              © {new Date().getFullYear()} MLBricks. Built for ML enthusiasts with ♥️
+            </p>
+            <div className="flex items-center gap-6">
+              <a href="https://github.com/jaywyawhare/MLBricks" className="text-sm text-muted-foreground hover:text-foreground transition-colors">GitHub</a>
+              <a href="/workspace" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Playground</a>
             </div>
-            <div>
-              <h3 className="text-sm font-semibold text-white tracking-wider uppercase mb-4">Resources</h3>
-              <ul className="space-y-4">
-                <li>
-                  <a href="#" className="hover:text-white transition">Documentation</a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition">Tutorials</a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition">Blog</a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold text-white tracking-wider uppercase mb-4">Company</h3>
-              <ul className="space-y-4">
-                <li>
-                  <a href="#" className="hover:text-white transition">About</a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition">Contact</a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition">Careers</a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold text-white tracking-wider uppercase mb-4">Legal</h3>
-              <ul className="space-y-4">
-                <li>
-                  <a href="#" className="hover:text-white transition">Privacy</a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition">Terms</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-12 border-t border-slate-800 pt-8">
-            <p className="text-center text-sm">© {new Date().getFullYear()} MLBricks. All rights reserved.</p>
           </div>
         </div>
       </footer>
