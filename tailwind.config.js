@@ -63,6 +63,14 @@ module.exports = {
           800: '#1e293b',
           900: '#0f172a',
         },
+        // Grid and workspace colors
+        grid: {
+          DEFAULT: 'hsl(var(--muted-foreground))',
+          light: 'hsl(var(--muted-foreground) / 0.2)',
+          dark: 'hsl(var(--muted-foreground) / 0.4)',
+          visible: 'hsl(var(--muted-foreground) / 0.6)',
+          hidden: 'hsl(var(--muted-foreground) / 0)',
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

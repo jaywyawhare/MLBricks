@@ -41,7 +41,17 @@ export type MLBlockType =
   | 'rnn_layer'
   | 'lstm_layer'
   | 'gru_layer'
+  | 'bidirectional_layer'
   | 'transformer_layer'
+  | 'attention_layer'
+  | 'embedding_layer'
+  | 'dropout_layer'
+  | 'batch_norm_layer'
+  | 'layer_norm_layer'
+  | 'flatten_layer'
+  | 'reshape_layer'
+  | 'pooling_layer'
+  | 'conv_layer'
   | 'neural_network'
   | 'transformer'
   | 'rnn'
@@ -73,6 +83,27 @@ export type BlockCategory =
 
 
 
+export type ConfigOptionType = 
+  | 'string' 
+  | 'number' 
+  | 'boolean' 
+  | 'select' 
+  | 'multiselect' 
+  | 'textarea'
+  | 'object'
+  | 'array'
+
+export interface ConfigOption {
+  name: string
+  type: ConfigOptionType
+  label: string
+  options?: string[]
+  default?: any
+  properties?: Record<string, ConfigOption>
+  arrayType?: ConfigOption
+  showIf?: string
+}
+
 export interface BlockType {
   type: MLBlockType
   icon: LucideIcon
@@ -88,11 +119,5 @@ export interface BlockType {
     name: string
     dataType: 'tensor' | 'array' | 'dataframe' | 'model' | 'dict' | 'plot'
   }[]
-  configOptions?: {
-    name: string
-    type: 'string' | 'number' | 'boolean' | 'select' | 'multiselect' | 'textarea'
-    label: string
-    options?: string[]
-    default?: any
-  }[]
+  configOptions?: ConfigOption[]
 }

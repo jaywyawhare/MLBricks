@@ -3,16 +3,12 @@ import {
   Blocks, 
   Brain, 
   BarChart3, 
-  Sparkles, 
-  Github, 
-  Star, 
-  Database,
-  Network
+  Sparkles
 } from 'lucide-react'
 
 function LandingPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-y-auto">
       {/* Navigation */}
       <nav className="sticky top-0 z-50 border-b border-border/40 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">

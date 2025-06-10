@@ -23,14 +23,6 @@ export interface ReactFlowMLBlockData {
   onConfigChange: (id: string, config: Record<string, any>) => void
 }
 
-interface ConfigOption {
-  name: string
-  type: 'string' | 'number' | 'boolean' | 'select' | 'multiselect' | 'textarea'
-  label: string
-  options?: string[]
-  default?: any
-}
-
 export const ReactFlowMLBlock = memo(({ 
   id, 
   data, 
@@ -42,7 +34,7 @@ export const ReactFlowMLBlock = memo(({
     onConfigChange(id, { ...config, [name]: value })
   }
 
-  const renderConfigOption = (option: ConfigOption) => {
+  const renderConfigOption = (option: import('../../types/block').ConfigOption) => {
     if (!option) return null
 
     switch (option.type) {
@@ -57,7 +49,7 @@ export const ReactFlowMLBlock = memo(({
               <SelectValue placeholder={option.label} />
             </SelectTrigger>
             <SelectContent>
-              {option.options?.map((opt) => (
+              {option.options?.map((opt: string) => (
                 <SelectItem key={opt} value={opt}>
                   {opt}
                 </SelectItem>
@@ -95,7 +87,7 @@ export const ReactFlowMLBlock = memo(({
                 <SelectValue placeholder={`Add ${option.label}`} />
               </SelectTrigger>
               <SelectContent>
-                {option.options?.filter(opt => !selectedValues.includes(opt)).map((opt) => (
+                {option.options?.filter(opt => !selectedValues.includes(opt)).map((opt: string) => (
                   <SelectItem key={opt} value={opt}>
                     {opt}
                   </SelectItem>
@@ -145,6 +137,18 @@ export const ReactFlowMLBlock = memo(({
               onCheckedChange={(checked: boolean) => handleConfigChange(option.name, checked)}
             />
             <span className="text-sm">{config[option.name] ? 'Enabled' : 'Disabled'}</span>
+          </div>
+        )
+      case 'object':
+        return (
+          <div key={option.name} className="p-2 border rounded bg-muted/50">
+            <span className="text-xs text-muted-foreground">Object configuration (advanced)</span>
+          </div>
+        )
+      case 'array':
+        return (
+          <div key={option.name} className="p-2 border rounded bg-muted/50">
+            <span className="text-xs text-muted-foreground">Array configuration (advanced)</span>
           </div>
         )
       default:

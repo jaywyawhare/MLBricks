@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef, forwardRef, useImperativeHandle } from 'react'
 import { 
   ReactFlow, 
   Node, 
@@ -14,17 +14,16 @@ import {
   MarkerType,
   OnConnect,
   OnNodesDelete,
-  OnEdgesDelete
+  OnEdgesDelete,
+  BackgroundVariant
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 
-import { Blocks, Zap, Sparkles, Trash2, Code2 } from "lucide-react"
+import { Blocks, Zap, Sparkles } from "lucide-react"
 import { ReactFlowMLBlock, ReactFlowMLBlockData } from '@/components/blocks/ReactFlowMLBlock'
 import { BlockLibrary } from '@/components/blocks/BlockLibrary'
 import type { BlockType, MLBlockType } from '@/types/block'
 import { BlockTypes } from '@/lib/blockTypes'
-import { generatePythonCode } from '@/lib/codeGenerator'
-import { Button } from '@/components/ui/button'
 
 // Custom node types for React Flow
 const nodeTypes: NodeTypes = {
@@ -37,12 +36,15 @@ interface ReactFlowWorkspaceProps {
   sidebarCollapsed?: boolean
 }
 
-export function ReactFlowWorkspace({ 
+export interface ReactFlowWorkspaceRef {
+  clearWorkspace: () => void
+}
+
+export const ReactFlowWorkspace = forwardRef<ReactFlowWorkspaceRef, ReactFlowWorkspaceProps>(({
   showGrid = true, 
   showMinimap = true, 
   sidebarCollapsed = false 
-}: ReactFlowWorkspaceProps) {
-  // Remove initial nodes/edges setup
+}, ref) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const [blockTypes] = useState<BlockType[]>(BlockTypes)
@@ -52,8 +54,10 @@ export function ReactFlowWorkspace({
     target: string
     status: 'valid' | 'invalid' | 'pending'
   } | null>(null)
+  const [fitViewOnce, setFitViewOnce] = useState(false)
+  const reactFlowWrapper = useRef<HTMLDivElement>(null)
+  const [reactFlowInstance, setReactFlowInstance] = useState<any>(null)
 
-  // Remove useEffect that adds sample blocks
   useEffect(() => {
     // Leave empty to start with clean workspace
   }, [])
@@ -107,14 +111,32 @@ export function ReactFlowWorkspace({
     const blockType = blockTypes.find(bt => bt.type === type)
     if (!blockType) return
     
+    // Calculate position - use a simple approach without screenToFlowPosition
+    let position = { x: 250, y: 250 } // Default center position
+    
+    if (reactFlowInstance && reactFlowWrapper.current) {
+      const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect()
+      const sidebarWidth = sidebarCollapsed ? 0 : 320
+      
+      // Get viewport info
+      const viewport = reactFlowInstance.getViewport()
+      
+      // Calculate center of visible area
+      const visibleWidth = reactFlowBounds.width - sidebarWidth
+      const visibleHeight = reactFlowBounds.height
+      
+      // Transform screen coordinates to flow coordinates
+      position = {
+        x: (-viewport.x + visibleWidth / 2) / viewport.zoom,
+        y: (-viewport.y + visibleHeight / 2) / viewport.zoom
+      }
+    }
+    
     const nodeId = `${type}-${Date.now()}`
     const newNode: Node<ReactFlowMLBlockData> = {
       id: nodeId,
       type: 'mlBlock',
-      position: { 
-        x: Math.random() * 400 + 100, 
-        y: Math.random() * 400 + 100 
-      },
+      position,
       data: {
         blockType,
         config: {},
@@ -124,12 +146,16 @@ export function ReactFlowWorkspace({
     }
     
     setNodes((nds) => nds.concat(newNode))
-  }, [blockTypes, setNodes])
+  }, [blockTypes, setNodes, removeBlock, handleConfigChange, sidebarCollapsed, reactFlowInstance])
 
   const clearWorkspace = useCallback(() => {
     setNodes([])
     setEdges([])
   }, [setNodes, setEdges])
+
+  useImperativeHandle(ref, () => ({
+    clearWorkspace
+  }), [clearWorkspace])
 
   // Validate connection compatibility
   const isValidConnection = useCallback((connection: Connection): boolean => {
@@ -205,8 +231,8 @@ export function ReactFlowWorkspace({
                 markerEnd: {
                   type: MarkerType.ArrowClosed,
                   color: 'hsl(var(--primary))',
-                  width: 16,
-                  height: 16,
+                  width: 12,  // Reduced from 16
+                  height: 12, // Reduced from 16
                   strokeWidth: 2,
                 },
           data: {
@@ -246,189 +272,27 @@ export function ReactFlowWorkspace({
     ))
   }, [setEdges])
 
-  const handleGenerateCode = useCallback(() => {
-    if (nodes.length === 0) {
-      setConnectionError("Add some blocks to generate code")
-      return
+  // Add an effect to fit view only once when nodes are loaded
+  useEffect(() => {
+    if (nodes.length > 0 && !fitViewOnce) {
+      setFitViewOnce(true)
     }
-
-    try {
-      const blocks = nodes.map(node => ({
-        id: node.id,
-        type: node.data.blockType.type,
-        config: node.data.config,
-        blockType: node.data.blockType
-      }))
-
-      const generatedCode = generatePythonCode(blocks)
-      
-      // Create a new window to display the generated code
-      const codeWindow = window.open('', '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes')
-      if (codeWindow) {
-        codeWindow.document.write(`
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <title>Generated Python Code - MLBricks</title>
-            <style>
-              body { 
-                font-family: 'Courier New', monospace; 
-                background: #1a1a1a; 
-                color: #f8f8f2; 
-                margin: 0; 
-                padding: 20px;
-                line-height: 1.5;
-              }
-              .header {
-                background: linear-gradient(135deg, #475569 0%, #334155 100%);
-                color: white;
-                padding: 20px;
-                margin: -20px -20px 20px -20px;
-                border-radius: 0 0 10px 10px;
-              }
-              .copy-btn {
-                background: #4CAF50;
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 5px;
-                cursor: pointer;
-                margin-top: 10px;
-              }
-              .copy-btn:hover { background: #45a049; }
-              pre {
-                background: #282828;
-                padding: 20px;
-                border-radius: 8px;
-                overflow-x: auto;
-                border-left: 4px solid #475569;
-              }
-              .keyword { color: #ff79c6; }
-              .string { color: #f1fa8c; }
-              .comment { color: #6272a4; font-style: italic; }
-              .function { color: #50fa7b; }
-            </style>
-          </head>
-          <body>
-            <div class="header">
-              <h1>🧱 MLBricks - Generated Python Code</h1>
-              <p>Generated pipeline with ${nodes.length} blocks and ${edges.length} connections</p>
-              <button class="copy-btn" onclick="copyCode()">📋 Copy to Clipboard</button>
-            </div>
-            <pre id="code">${generatedCode.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
-            <script>
-              function copyCode() {
-                const code = document.getElementById('code').textContent;
-                navigator.clipboard.writeText(code).then(() => {
-                  const btn = document.querySelector('.copy-btn');
-                  const originalText = btn.textContent;
-                  btn.textContent = '✅ Copied!';
-                  setTimeout(() => { btn.textContent = originalText; }, 2000);
-                });
-              }
-            </script>
-          </body>
-          </html>
-        `)
-        codeWindow.document.close()
-      } else {
-        // Fallback: copy to clipboard
-        navigator.clipboard.writeText(generatedCode).then(() => {
-          setConnectionError("Code copied to clipboard!")
-          setTimeout(() => setConnectionError(null), 2000)
-        })
-      }
-    } catch (error) {
-      console.error('Code generation error:', error)
-      setConnectionError("Failed to generate code. Check your pipeline.")
-    }
-  }, [nodes, edges])
+  }, [nodes.length])
 
   return (
-    <div className="h-full bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
-      <div className="flex h-full">
+    <div className="h-full bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 overflow-hidden">
+      <div className="flex h-full overflow-hidden" ref={reactFlowWrapper}>
         {/* Enhanced Sidebar - Modern Design */}
         <div className={`${
           sidebarCollapsed ? 'w-0' : 'w-72 sm:w-80 md:w-80 lg:w-80 xl:w-80 2xl:w-96'
-        } border-r border-slate-200/50 dark:border-slate-800/50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg shadow-sm overflow-y-auto overflow-x-hidden flex-shrink-0 transition-all duration-300 ${
-          sidebarCollapsed ? 'overflow-hidden' : ''
+        } border-r border-slate-200/50 dark:border-slate-800/50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg shadow-sm flex-shrink-0 transition-all duration-300 ${
+          sidebarCollapsed ? 'overflow-hidden' : 'overflow-hidden'
         }`}>
-          <div className={`${sidebarCollapsed ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300 p-4 lg:p-6`}>
-            {/* Block Library Header */}
-            <div className="mb-4 lg:mb-6">
-              <h2 className="text-base lg:text-lg font-semibold text-slate-900 dark:text-white mb-2 truncate">Block Library</h2>
-              <p className="text-xs lg:text-sm text-slate-600 dark:text-slate-400 line-clamp-2">Drag blocks to build your ML pipeline</p>
-            </div>
-
-            {/* Quick Stats - Modern Cards */}
-            <div className="flex flex-col space-y-2 mb-4 lg:mb-6">
-              <div className="flex items-center space-x-2 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200/50 dark:border-indigo-800/50 rounded-full max-w-full">
-                <Blocks className="h-4 w-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
-                <span className="font-medium text-indigo-700 dark:text-indigo-300 text-sm truncate">{nodes.length} blocks</span>
-              </div>
-              <div className="flex items-center space-x-2 px-3 py-1.5 bg-purple-50 dark:bg-purple-900/20 border border-purple-200/50 dark:border-purple-800/50 rounded-full max-w-full">
-                <Zap className="h-4 w-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
-                <span className="font-medium text-purple-700 dark:text-purple-300 text-sm truncate">{edges.length} connections</span>
-              </div>
-            </div>
-
+          <div className={`h-full ${sidebarCollapsed ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}>
             {/* Block Library */}
             <BlockLibrary 
               onAddBlock={addBlock}
-              onClearWorkspace={clearWorkspace}
-              onGenerateCode={handleGenerateCode}
             />
-
-            {/* Tips Section - Modern Design */}
-            <div className="mt-6 lg:mt-8 p-3 lg:p-4 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 dark:from-indigo-900/20 dark:to-purple-900/20 border border-indigo-200/50 dark:border-indigo-800/50 rounded-xl backdrop-blur-sm">
-              <h3 className="font-semibold text-sm text-slate-900 dark:text-white mb-3 flex items-center truncate">
-                <Sparkles className="h-4 w-4 text-indigo-600 dark:text-indigo-400 mr-2 flex-shrink-0" />
-                Quick Tips
-              </h3>
-              <ul className="text-xs text-muted-foreground space-y-2">
-                <li className="flex items-start space-x-2">
-                  <div className="w-1 h-1 bg-primary rounded-full mt-1.5 flex-shrink-0"></div>
-                  <span className="leading-relaxed">Drag blocks from library to workspace</span>
-                </li>
-                <li className="flex items-start space-x-2">
-                  <div className="w-1 h-1 bg-purple-500 rounded-full mt-1.5 flex-shrink-0"></div>
-                  <span className="leading-relaxed">Connect blue outputs to green inputs</span>
-                </li>
-                <li className="flex items-start space-x-2">
-                  <div className="w-1 h-1 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></div>
-                  <span className="leading-relaxed">Only compatible data types can connect</span>
-                </li>
-                <li className="flex items-start space-x-2">
-                  <div className="w-1 h-1 bg-red-500 rounded-full mt-1.5 flex-shrink-0"></div>
-                  <span className="leading-relaxed">Click connections to delete them</span>
-                </li>
-                <li className="flex items-start space-x-2">
-                  <div className="w-1 h-1 bg-violet-500 rounded-full mt-1.5 flex-shrink-0"></div>
-                  <span className="leading-relaxed">Use Ctrl+Delete to clear all connections</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Workspace Actions - Enhanced Mobile */}
-            <div className="mt-4 lg:mt-6 space-y-2 lg:space-y-3 responsive-padding">
-              <Button 
-                variant="outline" 
-                className="w-full justify-start bg-white/50 hover:bg-white/80 text-sm min-w-0"
-                onClick={clearWorkspace}
-              >
-                <Trash2 className="h-4 w-4 mr-3 text-red-500 flex-shrink-0" />
-                <span className="truncate">Clear Workspace</span>
-              </Button>
-              <Button 
-                variant="outline" 
-                className="w-full justify-start bg-gradient-to-r from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10 border-primary/20 text-sm min-w-0"
-                onClick={handleGenerateCode}
-                disabled={nodes.length === 0}
-              >
-                <Code2 className="h-4 w-4 mr-3 text-primary flex-shrink-0" />
-                <span className="truncate">Generate Python Code</span>
-              </Button>
-            </div>
           </div>
         </div>
 
@@ -519,12 +383,13 @@ export function ReactFlowWorkspace({
           <ReactFlow
             nodes={nodes}
             edges={edges}
-            className="bg-gradient-app"
+            className="bg-gradient-app h-full w-full"
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
             onNodesDelete={onNodesDelete}
             onEdgesDelete={onEdgesDelete}
+            onInit={setReactFlowInstance}
             nodeTypes={nodeTypes}
             connectionLineType={ConnectionLineType.SmoothStep}
             connectionLineStyle={{
@@ -532,13 +397,13 @@ export function ReactFlowWorkspace({
               stroke: 'hsl(var(--primary))',
               opacity: 0.8
             }}
-            defaultViewport={{ x: 0, y: 0, zoom: 1 }}
             minZoom={0.2}
             maxZoom={2}
-            fitView
+            fitView={!fitViewOnce}
             fitViewOptions={{
               padding: 0.2,
               includeHiddenNodes: false,
+              duration: 200
             }}
             proOptions={{ hideAttribution: true }}
           >
@@ -551,10 +416,14 @@ export function ReactFlowWorkspace({
             />
             {showGrid && (
               <Background 
-                gap={16} 
+                gap={20}
                 size={1}
                 color="hsl(var(--muted-foreground))"
-                className="opacity-20"
+                style={{
+                  opacity: showGrid ? 0.4 : 0,
+                  transition: 'opacity 0.2s ease-in-out',
+                }}
+                variant={BackgroundVariant.Dots}
               />
             )}
             {showMinimap && (
@@ -566,7 +435,7 @@ export function ReactFlowWorkspace({
                   backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   borderRadius: '0.5rem',
                   marginRight: '20px',
-                  marginBottom: '20px',
+                  marginBottom: '80px',
                   border: '1px solid rgba(255, 255, 255, 0.1)'
                 }}
                 zoomable
@@ -595,4 +464,6 @@ export function ReactFlowWorkspace({
       </div>
     </div>
   )
-}
+})
+
+ReactFlowWorkspace.displayName = 'ReactFlowWorkspace'

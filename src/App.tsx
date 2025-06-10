@@ -7,7 +7,7 @@ const WorkspacePage = lazy(() => import('@/pages/WorkspacePage'))
 
 function LoadingSpinner(): JSX.Element {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+    <div className="flex items-center justify-center h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 overflow-hidden">
       <div className="flex flex-col items-center space-y-6">
         <div className="relative">
           <div className="animate-spin rounded-full h-16 w-16 border-4 border-slate-200 border-t-slate-600"></div>
@@ -27,7 +27,7 @@ function LoadingSpinner(): JSX.Element {
 function App(): JSX.Element {
   return (
     <Router>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+      <div className="h-screen overflow-hidden">
         <Suspense fallback={<LoadingSpinner />}>
           <Routes>
             <Route path="/" element={<LandingPage />} />
